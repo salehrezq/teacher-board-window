@@ -27,7 +27,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -117,7 +116,6 @@ public class Painter extends JPanel {
 
         //////
     }
-
 
     private class MouseHandler extends MouseAdapter implements MouseMotionListener {
 
@@ -534,15 +532,20 @@ public class Painter extends JPanel {
         try {
             out.println("PainterSaver 0.1");
             out.println(" Background " + getBackground().getRed() + " " + getBackground().getGreen() + " " + getBackground().getBlue());
-//            for (CurveData curve : drawObjects) {
-//                out.println("startcurve");
-//                out.println(" color " + curve.getColor().getRed() + " " + curve.getColor().getGreen() + " " + curve.getColor().getBlue());
-//                out.println(" stroke " + curve.getStroke());
-//                for (Point point : curve.getPointsList()) {
-//                    out.println("  point " + point.x + " " + point.y);
-//                }
-//                out.println("endcurve");
-//            }
+
+            for (Object curve : drawObjects) {
+                out.println("startcurve");
+                CurveData castedCurve = null;
+                if (curve instanceof CurveData) {
+                    castedCurve = (CurveData) curve;
+                }
+                out.println(" color " + castedCurve.getColor().getRed() + " " + castedCurve.getColor().getGreen() + " " + castedCurve.getColor().getBlue());
+                out.println(" stroke " + castedCurve.getStroke());
+                for (Point point : castedCurve.getPointsList()) {
+                    out.println("  point " + point.x + " " + point.y);
+                }
+                out.println("endcurve");
+            }
             out.flush();
             out.close();
 
@@ -582,11 +585,13 @@ public class Painter extends JPanel {
             if (!programName.equalsIgnoreCase("PainterSaver")) {
                 JOptionPane.showMessageDialog(this,
                         "Sorry, This is not a PainterSaver File:\n");
+                return;
             }
             double version = scanner.nextDouble();
-            if (version > 0.1) {
+            if (version < 0.1) {
                 JOptionPane.showMessageDialog(this,
                         "Sorry, This File requires a higher version of PainterSaver File:\n");
+                return;
             }
             String background = scanner.next();
             if (background.equalsIgnoreCase("Background")) {
@@ -619,7 +624,7 @@ public class Painter extends JPanel {
                             int b = scanner.nextInt();
                             currentCurve.setColor(new Color(r, g, b));
                         } else if (item.equalsIgnoreCase("stroke")) {
-                            currentCurve.setStroke(scanner.nextInt());
+                            currentCurve.setStroke(scanner.nextFloat());
                         }
                         item = scanner.next();
                     }
@@ -629,6 +634,7 @@ public class Painter extends JPanel {
             scanner.close();
             // f.setTitle(selectedFile.getName());
             repaint();
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Cannot read data from the file " + "\"" + selectedFile + "\"" + "\n" + e);
