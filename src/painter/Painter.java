@@ -533,18 +533,30 @@ public class Painter extends JPanel {
             out.println("PainterSaver 0.1");
             out.println(" Background " + getBackground().getRed() + " " + getBackground().getGreen() + " " + getBackground().getBlue());
 
-            for (Object curve : drawObjects) {
-                out.println("startcurve");
-                CurveData castedCurve = null;
-                if (curve instanceof CurveData) {
-                    castedCurve = (CurveData) curve;
+            for (Object drawObj : drawObjects) {
+                CurveData curveData = null;
+                PointData pointData = null;
+                if (drawObj instanceof CurveData) {
+                    out.println("startcurve");
+                    curveData = (CurveData) drawObj;
+                    out.println(" color " + curveData.getColor().getRed() + " " + curveData.getColor().getGreen() + " " + curveData.getColor().getBlue());
+                    out.println(" stroke " + curveData.getStroke());
+                    for (Point point : curveData.getPointsList()) {
+                        out.println("  cp " + point.x + " " + point.y);
+                    }
+                    out.println("endcurve");
+                } else if (drawObj instanceof PointData) {
+                    pointData = (PointData) drawObj;
+                    Color color = pointData.getColor();
+                    Point point = pointData.getPoint();
+                    out.println("point "
+                            + color.getRed() + " "
+                            + color.getGreen() + " "
+                            + color.getBlue() + " "
+                            + pointData.getDiameter() + " "
+                            + point.x + " " + point.y);
                 }
-                out.println(" color " + castedCurve.getColor().getRed() + " " + castedCurve.getColor().getGreen() + " " + castedCurve.getColor().getBlue());
-                out.println(" stroke " + castedCurve.getStroke());
-                for (Point point : castedCurve.getPointsList()) {
-                    out.println("  point " + point.x + " " + point.y);
-                }
-                out.println("endcurve");
+
             }
             out.flush();
             out.close();
@@ -605,15 +617,16 @@ public class Painter extends JPanel {
             drawObjects = new ArrayList<>();
 
             while (scanner.hasNext()) {
-                String item = scanner.next();
 
+                String item = scanner.next();
+                
                 if (item.equalsIgnoreCase("startcurve")) {
                     CurveData currentCurve = new CurveData();
                     currentCurve.setPointsList(new ArrayList<>());
                     item = scanner.next();
                     while (!item.equalsIgnoreCase("endcurve")) {
 
-                        if (item.equalsIgnoreCase("point")) {
+                        if (item.equalsIgnoreCase("cp")) {
                             int x = scanner.nextInt();
                             int y = scanner.nextInt();
                             Point point = new Point(x, y);
@@ -626,9 +639,21 @@ public class Painter extends JPanel {
                         } else if (item.equalsIgnoreCase("stroke")) {
                             currentCurve.setStroke(scanner.nextFloat());
                         }
-                        item = scanner.next();
+                          item = scanner.next();
                     }
                     drawObjects.add(currentCurve);
+                } else if (item.equalsIgnoreCase("point")) {
+                    int r = scanner.nextInt();
+                    int g = scanner.nextInt();
+                    int b = scanner.nextInt();
+                    float diameter = scanner.nextFloat();
+                    Point point = new Point(scanner.nextInt(), scanner.nextInt());
+                    // PointData
+                    PointData pointData = new PointData();
+                    pointData.setColor(new Color(r, g, b));
+                    pointData.setDiameter(diameter);
+                    pointData.setPoint(point);
+                    drawObjects.add(pointData);
                 }
             }
             scanner.close();

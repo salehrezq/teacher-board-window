@@ -21,6 +21,10 @@ public class PointData implements Serializable {
     private Color color;
     private Point point;
 
+    public PointData() {
+
+    }
+
     public PointData(Point point) {
         this.point = point;
     }
