@@ -779,15 +779,15 @@ public class Painter extends JPanel {
     }
 
     public void seFrametTitle(int clients) {
-        String title = "Server board";
+        String title = "Teacher board";
         if (clients > 0) {
             if (clients == 1) {
-                title = "Server board -  " + clients + " client connected";
+                title = "Teacher board -  " + clients + " student connected";
             } else {
-                title = "Server board -  " + clients + " clients connected";
+                title = "Teacher board -  " + clients + " students connected";
             }
         } else {
-            title = "Server board -  No clients connected";
+            title = "Teacher board - No students connected";
         }
         this.frame.setTitle(title);
     }
