@@ -619,7 +619,7 @@ public class Painter extends JPanel {
             while (scanner.hasNext()) {
 
                 String item = scanner.next();
-                
+
                 if (item.equalsIgnoreCase("startcurve")) {
                     CurveData currentCurve = new CurveData();
                     currentCurve.setPointsList(new ArrayList<>());
@@ -639,7 +639,7 @@ public class Painter extends JPanel {
                         } else if (item.equalsIgnoreCase("stroke")) {
                             currentCurve.setStroke(scanner.nextFloat());
                         }
-                          item = scanner.next();
+                        item = scanner.next();
                     }
                     drawObjects.add(currentCurve);
                 } else if (item.equalsIgnoreCase("point")) {
@@ -711,11 +711,18 @@ public class Painter extends JPanel {
             return;
         }
         try {
+            out.writeObject("PainterSaver");
+            out.writeFloat((float) 0.1);
             out.writeObject(getBackground());
             out.writeInt(drawObjects.size());
-//            for (CurveData curve : drawObjects) {
-//                out.writeObject(curve);
-//            }
+            for (Object drawData : drawObjects) {
+                if (drawData instanceof CurveData) {
+                    drawData = (CurveData) drawData;
+                } else if (drawData instanceof PointData) {
+                    drawData = (PointData) drawData;
+                }
+                out.writeObject(drawData);
+            }
             out.close();
             editFile = selectedFile;
             //  f.setTitle("SimplePaint: " + editFile.getName());
@@ -750,18 +757,27 @@ public class Painter extends JPanel {
             return;
         }
         try {
+            String programName = (String) in.readObject();
+             float version = (float) in.readFloat();
             Color newBackgroundColor = (Color) in.readObject();
-            int curveCount = in.readInt();
-            ArrayList<CurveData> newCurves = new ArrayList<CurveData>();
-            for (int i = 0; i < curveCount; i++) {
-                newCurves.add((CurveData) in.readObject());
+            int drawObjectsCount = in.readInt();
+            for (int i = 0; i < drawObjectsCount; i++) {
+                Object drawObject = in.readObject();
+                CurveData curveData = null;
+                PointData pointData = null;
+                if (drawObject instanceof CurveData) {
+                    curveData = (CurveData) drawObject;
+                    drawObjects.add(curveData);
+                } else if (drawObject instanceof PointData) {
+                    pointData = (PointData) drawObject;
+                    drawObjects.add(pointData);
+                }
             }
             in.close();
-//            drawObjects = newCurves;
             setBackground(newBackgroundColor);
             repaint();
             editFile = selectedFile;
-            //   setTitle("SimplePaint: " + editFile.getName());
+//               this.frame.setTitle("SimplePaint: " + editFile.getName());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Sorry, but an error occurred while trying to read the data:\n" + e);
