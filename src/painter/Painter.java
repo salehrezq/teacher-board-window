@@ -55,8 +55,6 @@ public class Painter extends JPanel {
     JFrame frame;
 
     DialogClientsControl dialog;
-    int height;
-    int width;
 
     double stroke;
 
@@ -78,8 +76,6 @@ public class Painter extends JPanel {
 
     public Painter(ServerBroadcast server) {
 
-        height = 600;
-        width = 600;
         stroke = 10f;
 
         serverBroadCast = server;
@@ -811,7 +807,7 @@ public class Painter extends JPanel {
         }
         try {
             BufferedImage image;  // A copy of the sketch will be drawn here.
-            image = new BufferedImage(600, 600, BufferedImage.TYPE_INT_RGB);
+            image = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics g = image.getGraphics();  // For drawing onto the image.
             paintComponent(g);
             g.dispose();
