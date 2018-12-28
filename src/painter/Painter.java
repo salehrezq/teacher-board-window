@@ -379,7 +379,7 @@ public class Painter extends JPanel {
             }
         });
 
-        JMenuItem saveImageCommand = new JMenuItem("Save Image");
+        JMenuItem saveImageCommand = new JMenuItem("Save as image");
         fileMenue.add(saveImageCommand);
         saveImageCommand.addActionListener(new ActionListener() {
             @Override
