@@ -339,27 +339,27 @@ public class Painter extends JPanel {
             }
         });
 
-        JMenuItem saveTextCommand = new JMenuItem("Save (text format)");
-        fileMenue.add(saveTextCommand);
-        saveTextCommand.addActionListener(new ActionListener() {
+//        JMenuItem saveTextCommand = new JMenuItem("Save (text format)");
+//        fileMenue.add(saveTextCommand);
+//        saveTextCommand.addActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                doSaveText();
+//            }
+//        });
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                doSaveText();
-            }
-        });
+//        JMenuItem openTextCommand = new JMenuItem("Open (text format)");
+//        fileMenue.add(openTextCommand);
+//        openTextCommand.addActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                doOpenText();
+//            }
+//        });
 
-        JMenuItem openTextCommand = new JMenuItem("Open (text format)");
-        fileMenue.add(openTextCommand);
-        openTextCommand.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                doOpenText();
-            }
-        });
-
-        JMenuItem saveBinaryCommand = new JMenuItem("Save (binary format)");
+        JMenuItem saveBinaryCommand = new JMenuItem("Save board");
         fileMenue.add(saveBinaryCommand);
         saveBinaryCommand.addActionListener(new ActionListener() {
 
@@ -369,7 +369,7 @@ public class Painter extends JPanel {
             }
         });
 
-        JMenuItem openBinaryCommand = new JMenuItem("Open (binary format)");
+        JMenuItem openBinaryCommand = new JMenuItem("Open board");
         fileMenue.add(openBinaryCommand);
         openBinaryCommand.addActionListener(new ActionListener() {
 
