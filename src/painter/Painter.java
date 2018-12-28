@@ -85,7 +85,7 @@ public class Painter extends JPanel {
         currentColor = Color.BLACK;
         setBackground(Color.white);
 
-        SpinnerNumberModel model = new SpinnerNumberModel(stroke, 1, 100, 0.1);
+        SpinnerNumberModel model = new SpinnerNumberModel(stroke, 1, 1000, 1);
         spinner = new JSpinner(model);
 
         //The following 4 lines is to enable invoking the changelisener at the same time of typing...
