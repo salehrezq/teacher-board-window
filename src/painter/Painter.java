@@ -179,7 +179,7 @@ public class Painter extends JPanel {
         }
     }
 
-    public ArrayList<Object> getCurveList() {
+    public ArrayList<Object> getDrawingsList() {
         return this.drawObjects;
     }
 
@@ -771,8 +771,10 @@ public class Painter extends JPanel {
             }
             in.close();
             setBackground(newBackgroundColor);
+
             repaint();
             editFile = selectedFile;
+            serverBroadCast.broadcast_preMadeDrawingsData(drawObjects);
 //               this.frame.setTitle("SimplePaint: " + editFile.getName());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,

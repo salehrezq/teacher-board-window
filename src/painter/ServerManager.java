@@ -115,8 +115,8 @@ public class ServerManager implements Runnable {
             send_welcome_toClient();
             send_live_background(paint.getBackground());
 
-            if (paint.getCurveList().size() > 0) {
-                send_initial_live_drawData(paint.getCurveList());
+            if (paint.getDrawingsList().size() > 0) {
+                sendPreMadeDrawingsData(paint.getDrawingsList());
             } else {
                 send_newPage_command("newDrawList");
             }
@@ -139,9 +139,9 @@ public class ServerManager implements Runnable {
         writeObject(color);
     }
 
-    private void send_initial_live_drawData(ArrayList<Object> listOfCurves) {
-        if ((listOfCurves != null) && (listOfCurves.size() > 0)) {
-            writeObject(listOfCurves);
+    public void sendPreMadeDrawingsData(ArrayList<Object> listOfDrawingsData) {
+        if ((listOfDrawingsData != null) && (listOfDrawingsData.size() > 0)) {
+            writeObject(listOfDrawingsData);
         }
     }
 

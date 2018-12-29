@@ -10,6 +10,7 @@ import java.awt.Point;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,6 +88,12 @@ public class ServerBroadcast {
         }
     }
 
+    public void broadcast_preMadeDrawingsData(ArrayList<Object> listOfDrawingsData) {
+        for (ServerManager connectedClient : connectedClients) {
+            connectedClient.sendPreMadeDrawingsData(listOfDrawingsData);
+        }
+    }
+
     public void broadcast_maximize_command(String maximize) {
         for (ServerManager connectedClient : connectedClients) {
             connectedClient.send_maximize_command(maximize);
@@ -140,13 +147,12 @@ public class ServerBroadcast {
         // 4- Update table model to reflect this removal fact.
         // 5- Set current serverManager object to null.
 
-       
         serverManager.killRunningReceivingThread();
 
         if (client_addresses.remove(serverManager.getClientIP()));
         {
             dataClients.removeClient(serverManager.getClientRow());
-             painter.seFrametTitle(client_addresses.size());
+            painter.seFrametTitle(client_addresses.size());
         }
 
         connectedClients.remove(serverManager);
