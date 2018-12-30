@@ -1,7 +1,7 @@
 # teacher-board-window
 Desktop app used as a teacher blackboard. It sends live writing/drawing to connected [student-board-window](https://github.com/salehrezq/student-board-window) instances.
 ## Main window:
-![Screenshot](https://1.bp.blogspot.com/-Fs6-w_ybiAk/XCgx24FFc-I/AAAAAAAAGgs/aw7-cU3avLgXF32MuMi4PRGfA0wKXprHwCLcBGAs/s1600/teacher.png)
+![App main window](https://1.bp.blogspot.com/-T_4jvQhn7io/XCg1FcM-zHI/AAAAAAAAGhI/BB6mOPQbL5wFGomuWughen2ok7dtRvK-QCLcBGAs/s1600/teacher.png)
 
 ## Students monitor window:
 
@@ -13,4 +13,4 @@ For brevity I will refer to "student-board-window" as SBW. The student himself c
 - Upfornt: green color means that the SBW instance is upfront, red color means it is minimized to the taskbar.
 - Fullscreen: green color means that the SBW instance is maximized (it is not literally a fullscreen), red color means the window is resized.
 
-![Students instances monitor](https://1.bp.blogspot.com/-ZHqpUVbPuas/XCgxwXq47EI/AAAAAAAAGgk/g07DwQaI6HsczN2R6Xsj9xrvYEcSxcu1wCEwYBhgL/s1600/teacher.png)
+![Students instances monitor](https://3.bp.blogspot.com/-L90WUexOpK4/XCg1FE-TZLI/AAAAAAAAGhA/sP3AflJmJzAFMoskY6gG3onVvFETExLdACEwYBhgL/s1600/monitor.png)
