@@ -288,7 +288,7 @@ public class Painter extends JPanel {
                     if (dialog != null) {
                         dialog.setVisible(true);
                     } else {
-                        dialog = new DialogClientsControl(frame, "Users monitor", serverBroadCast);
+                        dialog = new DialogClientsControl(frame, "Students monitor", serverBroadCast);
                     }
                 }
             });
