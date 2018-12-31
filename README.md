@@ -1,5 +1,5 @@
 # teacher-board-window
-Desktop app used as a teacher blackboard. It sends live writing/drawing to connected [student-board-window](https://github.com/salehrezq/student-board-window) instances.
+Desktop app used as a teacher blackboard. It broadcasts live writing/drawing to connected [student-board-window](https://github.com/salehrezq/student-board-window) instances.
 ## Main window:
 ![App main window](https://1.bp.blogspot.com/-T_4jvQhn7io/XCg1FcM-zHI/AAAAAAAAGhI/BB6mOPQbL5wFGomuWughen2ok7dtRvK-QCLcBGAs/s1600/teacher.png)
 
