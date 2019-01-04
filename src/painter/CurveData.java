@@ -22,6 +22,7 @@ public class CurveData implements Serializable {
 
     private Color color;
     private float stroke;
+    private boolean eraser;
     private ArrayList<Point> pointsList;
 
     public Color getColor() {
@@ -40,6 +41,14 @@ public class CurveData implements Serializable {
         return this.stroke;
     }
 
+    public void setAsEraser() {
+        eraser = true;
+    }
+
+    public boolean isEraser() {
+        return eraser;
+    }
+
     public ArrayList<Point> getPointsList() {
         return pointsList;
     }
@@ -47,4 +56,5 @@ public class CurveData implements Serializable {
     public void setPointsList(ArrayList<Point> pList) {
         this.pointsList = pList;
     }
+
 }

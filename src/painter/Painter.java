@@ -59,12 +59,15 @@ public class Painter extends JPanel {
     double stroke;
 
     JSpinner spinner;
+    JButton btnDrawTool; // to toggle between the pen and the eraser.
     JButton btn_clients_control;
+    private boolean eraserTool;
 
     private JFileChooser filechooser;
     private ArrayList<Object> drawObjects;
     private ArrayList<Object> drawObjects_redo;
 
+    private Color penColor;
     private Color currentColor;
 
     private File editFile;        // The file that is being edited, if any.
@@ -82,7 +85,8 @@ public class Painter extends JPanel {
 
         drawObjects = new ArrayList<>();
         drawObjects_redo = new ArrayList<>();
-        currentColor = Color.BLACK;
+        penColor = Color.BLACK;
+        currentColor = penColor;
         setBackground(Color.white);
 
         SpinnerNumberModel model = new SpinnerNumberModel(stroke, 1, 1000, 1);
@@ -102,6 +106,9 @@ public class Painter extends JPanel {
             }
         });
 
+        btnDrawTool = new JButton("Eraser");
+        btnDrawTool.setActionCommand("Eraser");
+        btnDrawTool.addActionListener(actionBtnDrawTool);
         btn_clients_control = new JButton("Monitor");
         btn_clients_control.addActionListener(action_btn_clients_control);
 
@@ -127,16 +134,22 @@ public class Painter extends JPanel {
 
             //Set up pointData
             pointData = new PointData(point);
-            pointData.setColor(currentColor);
+            pointData.setColor(penColor);
             pointData.setDiameter((float) stroke);
+            if (eraserTool) {
+                pointData.setAsEraser();
+            }
             drawObjects.add(pointData);
 
             //Set up CurveData
             curveData = new CurveData();
             curveData.setStroke(stroke);
-            curveData.setColor(currentColor);
+            curveData.setColor(penColor);
             curveData.setPointsList(new ArrayList<>());
             curveData.getPointsList().add(point);
+            if (eraserTool) {
+                curveData.setAsEraser();
+            }
             drawObjects.add(curveData);
 
             serverBroadCast.broadcast_mousePressed(curveData);
@@ -205,7 +218,12 @@ public class Painter extends JPanel {
 
     private void drawCurve(Graphics2D g2, CurveData curve) {
 
-        g2.setColor(curve.getColor());
+        if (curve.isEraser()) {
+            g2.setColor(getBackground());
+        } else {
+            g2.setColor(curve.getColor());
+        }
+
         g2.setStroke(getStroke(curve.getStroke()));
 
         for (int i = 1; i < curve.getPointsList().size(); i++) {
@@ -220,7 +238,11 @@ public class Painter extends JPanel {
 
     private void drawPoint(Graphics2D g2, PointData point) {
 
-        g2.setColor(point.getColor());
+        if (point.isEraser()) {
+            g2.setColor(getBackground());
+        } else {
+            g2.setColor(point.getColor());
+        }
 
         int diameter = (int) point.getDiameter() + 3;
         int x = point.getPoint().x - diameter / 2;
@@ -295,6 +317,40 @@ public class Painter extends JPanel {
         }
     };
 
+    Action actionBtnDrawTool = new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+
+                    String action = e.getActionCommand();
+
+                    if (action.equals("Eraser")) {
+                        // Switch the tool button to be ready to set the Pen
+                        btnDrawTool.setActionCommand("Pen");
+                        btnDrawTool.setText("Switch to pen");
+                        // Do the work related to the eraser
+                        currentColor = new Color(penColor.getRGB());
+                        penColor = getBackground();
+                        eraserTool = true;
+                    } else if (action.equals("Pen")) {
+                        setToolToPenColor(currentColor);
+                    }
+                }
+            });
+        }
+    };
+
+    private void setToolToPenColor(Color color) {
+        // Switch the tool button to be ready to set the Eraser
+        btnDrawTool.setActionCommand("Eraser");
+        btnDrawTool.setText("Eraser");
+        // Do the work related to the eraser
+        eraserTool = false;
+        penColor = color;
+    }
+
     private void set_background(Color color) {
         setBackground(color);
         serverBroadCast.broadcast_background(color);
@@ -316,6 +372,7 @@ public class Painter extends JPanel {
         menuBar.add(menuControl);
         menuBar.add(menuColor);
         menuBar.add(menu_bgColor);
+        menuBar.add(btnDrawTool);
         menuBar.add(btn_clients_control);
         menuBar.add(spinner);
 
@@ -413,9 +470,10 @@ public class Painter extends JPanel {
             // drawing color using a JColorChoice dialog.
             public void actionPerformed(ActionEvent evt) {
                 Color c = JColorChooser.showDialog(Painter.this,
-                        "Select Drawing Color", currentColor);
+                        "Select Drawing Color", penColor);
                 if (c != null) {
-                    currentColor = c;
+                    penColor = c;
+                    setToolToPenColor(penColor);
                 }
             }
         });
@@ -485,7 +543,8 @@ public class Painter extends JPanel {
         JMenuItem item = new JMenuItem(command);
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                currentColor = color;
+                penColor = color;
+                setToolToPenColor(penColor);
             }
         });
         return item;
@@ -775,6 +834,7 @@ public class Painter extends JPanel {
             repaint();
             editFile = selectedFile;
             serverBroadCast.broadcast_preMadeDrawingsData(drawObjects);
+            serverBroadCast.broadcast_background(newBackgroundColor);
 //               this.frame.setTitle("SimplePaint: " + editFile.getName());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,

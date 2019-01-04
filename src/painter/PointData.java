@@ -19,6 +19,7 @@ public class PointData implements Serializable {
 
     private float diameter;
     private Color color;
+    private boolean eraser;
     private Point point;
 
     public PointData() {
@@ -43,6 +44,14 @@ public class PointData implements Serializable {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public void setAsEraser() {
+        eraser = true;
+    }
+
+    public boolean isEraser() {
+        return eraser;
     }
 
     public Point getPoint() {
