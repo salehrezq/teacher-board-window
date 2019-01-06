@@ -71,18 +71,16 @@ public class Painter extends JPanel {
 
     private Color penColor;
     private Color currentColor;
+    private Color backgroundColorBeforeStrengthChange;
 
     private File editFile;        // The file that is being edited, if any.
 
     private JFileChooser fileDialog;   // The dialog box for all open/save commands.
 
-    private static final Color CURVES_COLOR = Color.BLUE;
-    private static final Color TEMP_CURVE_COLOR = Color.PINK;
-
     public Painter(ServerBroadcast server) {
 
         strokeSize = 10f;
-        colorStrength = 10f;
+        colorStrength = 0.6;
 
         serverBroadCast = server;
 
@@ -90,7 +88,9 @@ public class Painter extends JPanel {
         drawObjects_redo = new ArrayList<>();
         penColor = Color.BLACK;
         currentColor = penColor;
-        setBackground(Color.white);
+
+        backgroundColorBeforeStrengthChange = Color.white;
+        setBackground(backgroundColorBeforeStrengthChange);
 
         setUpspinnerBackgroundColorStrength();
         setUpspinnerStrokeSize();
@@ -131,7 +131,7 @@ public class Painter extends JPanel {
 
     private void setUpspinnerBackgroundColorStrength() {
 
-        SpinnerNumberModel model = new SpinnerNumberModel(colorStrength, 1, 1000, 1);
+        SpinnerNumberModel model = new SpinnerNumberModel(colorStrength, 0.0, 1, 0.1);
         spinnerBackgroundColorStrength = new JSpinner(model);
 
         //The following 4 lines is to enable invoking the changelisener at the same time of typing...
@@ -145,8 +145,19 @@ public class Painter extends JPanel {
             @Override
             public void stateChanged(ChangeEvent e) {
                 colorStrength = ((double) spinnerBackgroundColorStrength.getValue());
+                setAndBroadcastBackgroundColor(brighten(backgroundColorBeforeStrengthChange, colorStrength));
             }
         });
+    }
+    public Color brighten(Color color, double fraction) {
+
+        int red = (int) Math.round(Math.min(255, color.getRed() + 255 * fraction));
+        int green = (int) Math.round(Math.min(255, color.getGreen() + 255 * fraction));
+        int blue = (int) Math.round(Math.min(255, color.getBlue() + 255 * fraction));
+
+        int alpha = color.getAlpha();
+
+        return new Color(red, green, blue, alpha);
     }
 
     private class MouseHandler extends MouseAdapter implements MouseMotionListener {
@@ -380,7 +391,7 @@ public class Painter extends JPanel {
         penColor = color;
     }
 
-    private void set_background(Color color) {
+    private void setAndBroadcastBackgroundColor(Color color) {
         setBackground(color);
         serverBroadCast.broadcast_background(color);
     }
@@ -529,10 +540,11 @@ public class Painter extends JPanel {
 
         customBgColor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                Color c = JColorChooser.showDialog(Painter.this,
+                Color color = JColorChooser.showDialog(Painter.this,
                         "Select Background Color", getBackground());
-                if (c != null) {
-                    set_background(c);
+                if (color != null) {
+                    backgroundColorBeforeStrengthChange = color;
+                    setAndBroadcastBackgroundColor(color);
                 }
             }
         });
@@ -557,7 +569,8 @@ public class Painter extends JPanel {
         JMenuItem item = new JMenuItem(command);
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                set_background(color);
+                backgroundColorBeforeStrengthChange = color;
+                setAndBroadcastBackgroundColor(brighten(color, colorStrength));
             }
         });
         return item;
