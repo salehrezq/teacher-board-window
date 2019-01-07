@@ -28,6 +28,8 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.*;
@@ -144,8 +146,13 @@ public class Painter extends JPanel {
         spinnerBackgroundColorStrength.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                colorStrength = ((double) spinnerBackgroundColorStrength.getValue());
-                setAndBroadcastBackgroundColor(brighten(backgroundColorBeforeStrengthChange, colorStrength));
+                try {
+                    Thread.sleep(150);
+                    colorStrength = ((double) spinnerBackgroundColorStrength.getValue());
+                    setAndBroadcastBackgroundColor(brighten(backgroundColorBeforeStrengthChange, colorStrength));
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Painter.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
