@@ -71,9 +71,17 @@ public class Painter extends JPanel {
     private ArrayList<Object> drawObjects;
     private ArrayList<Object> drawObjects_redo;
 
+
+
+    JMenu menuColor;
+    private final String penColorTitle = "Pen color";
     private Color penColor;
+
     private Color currentColor;
     private Color backgroundColorBeforeStrengthChange;
+
+    JMenu menuBackgroundColor;
+    private final String backgroundColorTitle = "Background color";
 
     private File editFile;        // The file that is being edited, if any.
 
@@ -108,7 +116,6 @@ public class Painter extends JPanel {
         this.addMouseListener(listener);
         this.addMouseMotionListener(listener);
 
-        //////
     }
 
     private void setUpspinnerStrokeSize() {
@@ -400,6 +407,7 @@ public class Painter extends JPanel {
 
     private void setAndBroadcastBackgroundColor(Color color) {
         setBackground(color);
+        menuBackgroundColor.setText(Utility.generateTitleWithSquarColor(backgroundColorTitle, color));
         serverBroadCast.broadcast_background(color);
     }
 
@@ -412,13 +420,13 @@ public class Painter extends JPanel {
         /* Create the menus and add them to the menu bar. */
         JMenu fileMenue = new JMenu("File");
         JMenu menuControl = new JMenu("Control");
-        JMenu menuColor = new JMenu("Color");
-        JMenu menu_bgColor = new JMenu("BackgroundColor");
+        menuColor = new JMenu(Utility.generateTitleWithSquarColor(penColorTitle, penColor));
+        menuBackgroundColor = new JMenu(Utility.generateTitleWithSquarColor(backgroundColorTitle, backgroundColorBeforeStrengthChange));
 
         menuBar.add(fileMenue);
         menuBar.add(menuControl);
         menuBar.add(menuColor);
-        menuBar.add(menu_bgColor);
+        menuBar.add(menuBackgroundColor);
         menuBar.add(btnDrawTool);
         menuBar.add(btn_clients_control);
         menuBar.add(new JLabel(" Background color strength: "));
@@ -519,11 +527,12 @@ public class Painter extends JPanel {
             // The "Custom..." color command lets the user select the current
             // drawing color using a JColorChoice dialog.
             public void actionPerformed(ActionEvent evt) {
-                Color c = JColorChooser.showDialog(Painter.this,
+                Color color = JColorChooser.showDialog(Painter.this,
                         "Select Drawing Color", penColor);
-                if (c != null) {
-                    penColor = c;
+                if (color != null) {
+                    penColor = color;
                     setToolToPenColor(penColor);
+                    menuColor.setText(Utility.generateTitleWithSquarColor(penColorTitle, penColor));
                 }
             }
         });
@@ -533,17 +542,17 @@ public class Painter extends JPanel {
              * one of these commands, the panel is immediately redrawn with the new
              * background color.  Any curves that have been drawn are still there.
          */
-        menu_bgColor.add(makeBgColorMenuItem("Chalkboard", new Color(121, 183, 125)));
-        menu_bgColor.add(makeBgColorMenuItem("Black", Color.BLACK));
-        menu_bgColor.add(makeBgColorMenuItem("White", Color.WHITE));
-        menu_bgColor.add(makeBgColorMenuItem("Red", Color.RED));
-        menu_bgColor.add(makeBgColorMenuItem("Green", Color.GREEN));
-        menu_bgColor.add(makeBgColorMenuItem("Blue", Color.BLUE));
-        menu_bgColor.add(makeBgColorMenuItem("Cyan", Color.CYAN));
-        menu_bgColor.add(makeBgColorMenuItem("Magenta", Color.MAGENTA));
-        menu_bgColor.add(makeBgColorMenuItem("Yellow", Color.YELLOW));
+        menuBackgroundColor.add(makeBgColorMenuItem("Chalkboard", new Color(121, 183, 125)));
+        menuBackgroundColor.add(makeBgColorMenuItem("Black", Color.BLACK));
+        menuBackgroundColor.add(makeBgColorMenuItem("White", Color.WHITE));
+        menuBackgroundColor.add(makeBgColorMenuItem("Red", Color.RED));
+        menuBackgroundColor.add(makeBgColorMenuItem("Green", Color.GREEN));
+        menuBackgroundColor.add(makeBgColorMenuItem("Blue", Color.BLUE));
+        menuBackgroundColor.add(makeBgColorMenuItem("Cyan", Color.CYAN));
+        menuBackgroundColor.add(makeBgColorMenuItem("Magenta", Color.MAGENTA));
+        menuBackgroundColor.add(makeBgColorMenuItem("Yellow", Color.YELLOW));
         JMenuItem customBgColor = new JMenuItem("Custom...");
-        menu_bgColor.add(customBgColor);
+        menuBackgroundColor.add(customBgColor);
 
         customBgColor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -576,8 +585,8 @@ public class Painter extends JPanel {
         JMenuItem item = new JMenuItem(command);
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                backgroundColorBeforeStrengthChange = color;
-                setAndBroadcastBackgroundColor(brighten(color, colorStrength));
+                backgroundColorBeforeStrengthChange = brighten(color, colorStrength);
+                setAndBroadcastBackgroundColor(backgroundColorBeforeStrengthChange);
             }
         });
         return item;
@@ -597,6 +606,7 @@ public class Painter extends JPanel {
             public void actionPerformed(ActionEvent evt) {
                 penColor = color;
                 setToolToPenColor(penColor);
+                menuColor.setText(Utility.generateTitleWithSquarColor(penColorTitle, penColor));
             }
         });
         return item;
