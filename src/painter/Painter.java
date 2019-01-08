@@ -452,16 +452,23 @@ public class Painter extends JPanel {
         menuColor = new JMenu(Utility.generateTitleWithSquarColor(penColorTitle, penColor));
         menuBackgroundColor = new JMenu(Utility.generateTitleWithSquarColor(backgroundColorTitle, backgroundColorBeforeStrengthChange));
 
+        Color lbControlsColor = new Color(105, 105, 105);
         menuBar.add(fileMenue);
         menuBar.add(menuControl);
         menuBar.add(menuColor);
-        menuBar.add(new JLabel(" Stroke size: "));
+        JLabel lbStrokeSize = new JLabel(" Stroke size: ");
+        lbStrokeSize.setForeground(lbControlsColor);
+        menuBar.add(lbStrokeSize);
         menuBar.add(spinnerStrokeSize);
         menuBar.add(btnDrawTool);
-        menuBar.add(new JLabel(" Eraser size: "));
+        JLabel lbEraserSize = new JLabel(" Eraser size: ");
+        lbEraserSize.setForeground(lbControlsColor);
+        menuBar.add(lbEraserSize);
         menuBar.add(spinnerEraserSize);
         menuBar.add(menuBackgroundColor);
-        menuBar.add(new JLabel(" Background color strength: "));
+        JLabel lbBackgroundColorStrength = new JLabel(" Background color strength: ");
+        lbBackgroundColorStrength.setForeground(lbControlsColor);
+        menuBar.add(lbBackgroundColorStrength);
         menuBar.add(spinnerBackgroundColorStrength);;
         menuBar.add(btn_clients_control);
 
