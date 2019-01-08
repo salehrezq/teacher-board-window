@@ -129,7 +129,7 @@ public class Painter extends JPanel {
         DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
         formatter.setCommitsOnValidEdit(true);
         //
-        spinnerStrokeSize.setPreferredSize(new Dimension(45, spinnerStrokeSize.getPreferredSize().height));
+        spinnerStrokeSize.setMaximumSize(new Dimension(70, spinnerStrokeSize.getPreferredSize().height));
         spinnerStrokeSize.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -149,7 +149,7 @@ public class Painter extends JPanel {
         DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
         formatter.setCommitsOnValidEdit(true);
         //
-        spinnerBackgroundColorStrength.setPreferredSize(new Dimension(45, spinnerBackgroundColorStrength.getPreferredSize().height));
+        spinnerBackgroundColorStrength.setMaximumSize(new Dimension(70, spinnerBackgroundColorStrength.getPreferredSize().height));
         spinnerBackgroundColorStrength.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -426,13 +426,13 @@ public class Painter extends JPanel {
         menuBar.add(fileMenue);
         menuBar.add(menuControl);
         menuBar.add(menuColor);
-        menuBar.add(menuBackgroundColor);
-        menuBar.add(btnDrawTool);
-        menuBar.add(btn_clients_control);
-        menuBar.add(new JLabel(" Background color strength: "));
-        menuBar.add(spinnerBackgroundColorStrength);
         menuBar.add(new JLabel(" Stroke size: "));
         menuBar.add(spinnerStrokeSize);
+        menuBar.add(btnDrawTool);
+        menuBar.add(menuBackgroundColor);
+        menuBar.add(new JLabel(" Background color strength: "));
+        menuBar.add(spinnerBackgroundColorStrength);;
+        menuBar.add(btn_clients_control);
 
         /* Add commands to the "Control" menu.  It contains an Undo
              * command that will remove the most recently drawn curve
