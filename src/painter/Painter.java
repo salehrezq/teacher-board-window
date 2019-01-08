@@ -60,8 +60,10 @@ public class Painter extends JPanel {
 
     double strokeSize;
     double colorStrength;
+    double eraserSize;
 
     JSpinner spinnerStrokeSize;
+    JSpinner spinnerEraserSize;
     JSpinner spinnerBackgroundColorStrength;
     JButton btnDrawTool; // to toggle between the pen and the eraser.
     JButton btn_clients_control;
@@ -90,6 +92,7 @@ public class Painter extends JPanel {
     public Painter(ServerBroadcast server) {
 
         strokeSize = 10f;
+        eraserSize = 30f;
         colorStrength = 0.6;
 
         serverBroadCast = server;
@@ -104,6 +107,7 @@ public class Painter extends JPanel {
 
         setUpspinnerBackgroundColorStrength();
         setUpspinnerStrokeSize();
+        setUpspinnerEraserSize();
 
         btnDrawTool = new JButton("Eraser");
         btnDrawTool.setActionCommand("Eraser");
@@ -134,6 +138,26 @@ public class Painter extends JPanel {
             @Override
             public void stateChanged(ChangeEvent e) {
                 strokeSize = ((double) spinnerStrokeSize.getValue());
+            }
+        });
+    }
+
+    private void setUpspinnerEraserSize() {
+
+        SpinnerNumberModel model = new SpinnerNumberModel(eraserSize, 1, 1000, 1);
+        spinnerEraserSize = new JSpinner(model);
+
+        //The following 4 lines is to enable invoking the changelisener at the same time of typing...
+        JComponent comp = spinnerEraserSize.getEditor();
+        JFormattedTextField field = (JFormattedTextField) comp.getComponent(0);
+        DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
+        formatter.setCommitsOnValidEdit(true);
+        //
+        spinnerEraserSize.setMaximumSize(new Dimension(70, spinnerEraserSize.getPreferredSize().height));
+        spinnerEraserSize.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                eraserSize = ((double) spinnerEraserSize.getValue());
             }
         });
     }
@@ -188,22 +212,27 @@ public class Painter extends JPanel {
 
             //Set up pointData
             pointData = new PointData(point);
-            pointData.setColor(penColor);
-            pointData.setDiameter((float) strokeSize);
             if (eraserTool) {
                 pointData.setAsEraser();
+                pointData.setDiameter((float) eraserSize);
+            } else {
+                pointData.setDiameter((float) strokeSize);
+                pointData.setColor(penColor);
             }
             drawObjects.add(pointData);
 
             //Set up CurveData
             curveData = new CurveData();
-            curveData.setStroke(strokeSize);
-            curveData.setColor(penColor);
-            curveData.setPointsList(new ArrayList<>());
-            curveData.getPointsList().add(point);
             if (eraserTool) {
                 curveData.setAsEraser();
+                curveData.setStroke(eraserSize);
+            } else {
+                curveData.setStroke(strokeSize);
+                curveData.setColor(penColor);
             }
+            curveData.setPointsList(new ArrayList<>());
+            curveData.getPointsList().add(point);
+
             drawObjects.add(curveData);
 
             serverBroadCast.broadcast_mousePressed(curveData);
@@ -429,6 +458,8 @@ public class Painter extends JPanel {
         menuBar.add(new JLabel(" Stroke size: "));
         menuBar.add(spinnerStrokeSize);
         menuBar.add(btnDrawTool);
+        menuBar.add(new JLabel(" Eraser size: "));
+        menuBar.add(spinnerEraserSize);
         menuBar.add(menuBackgroundColor);
         menuBar.add(new JLabel(" Background color strength: "));
         menuBar.add(spinnerBackgroundColorStrength);;
