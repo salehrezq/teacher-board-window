@@ -180,6 +180,7 @@ public class Painter extends JPanel {
                 try {
                     Thread.sleep(150);
                     colorStrength = ((double) spinnerBackgroundColorStrength.getValue());
+
                     setAndBroadcastBackgroundColor(brighten(backgroundColorBeforeStrengthChange, colorStrength));
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Painter.class.getName()).log(Level.SEVERE, null, ex);
@@ -623,8 +624,9 @@ public class Painter extends JPanel {
         JMenuItem item = new JMenuItem(command);
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                backgroundColorBeforeStrengthChange = brighten(color, colorStrength);
-                setAndBroadcastBackgroundColor(backgroundColorBeforeStrengthChange);
+                backgroundColorBeforeStrengthChange = color;
+                Color newColor = brighten(backgroundColorBeforeStrengthChange, colorStrength);
+                setAndBroadcastBackgroundColor(newColor);
             }
         });
         return item;
