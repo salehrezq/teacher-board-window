@@ -59,7 +59,6 @@ public class Painter extends JPanel {
     DialogClientsControl dialog;
 
     double strokeSize;
-    double colorStrength;
     double eraserSize;
 
     JSpinner spinnerStrokeSize;
@@ -73,12 +72,9 @@ public class Painter extends JPanel {
     private ArrayList<Object> drawObjects;
     private ArrayList<Object> drawObjects_redo;
 
-
-
     JMenu menuColor;
     private final String penColorTitle = "Pen color";
     private Color penColor;
-
     private Color currentColor;
     private Color backgroundColorBeforeStrengthChange;
 
@@ -93,7 +89,6 @@ public class Painter extends JPanel {
 
         strokeSize = 10f;
         eraserSize = 30f;
-        colorStrength = 0.6;
 
         serverBroadCast = server;
 
@@ -164,7 +159,7 @@ public class Painter extends JPanel {
 
     private void setUpspinnerBackgroundColorStrength() {
 
-        SpinnerNumberModel model = new SpinnerNumberModel(colorStrength, 0.0, 1, 0.1);
+        SpinnerNumberModel model = new SpinnerNumberModel(50f, 0, 100, 1);
         spinnerBackgroundColorStrength = new JSpinner(model);
 
         //The following 4 lines is to enable invoking the changelisener at the same time of typing...
@@ -178,25 +173,20 @@ public class Painter extends JPanel {
             @Override
             public void stateChanged(ChangeEvent e) {
                 try {
-                    Thread.sleep(150);
-                    colorStrength = ((double) spinnerBackgroundColorStrength.getValue());
-
-                    setAndBroadcastBackgroundColor(brighten(backgroundColorBeforeStrengthChange, colorStrength));
+                    Thread.sleep(50);
+                    float luminance = ((Double) spinnerBackgroundColorStrength.getValue()).floatValue();
+                    setAndBroadcastBackgroundColor(brighten(backgroundColorBeforeStrengthChange, luminance));
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Painter.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
     }
-    public Color brighten(Color color, double fraction) {
+    public Color brighten(Color color, float luminance) {
 
-        int red = (int) Math.round(Math.min(255, color.getRed() + 255 * fraction));
-        int green = (int) Math.round(Math.min(255, color.getGreen() + 255 * fraction));
-        int blue = (int) Math.round(Math.min(255, color.getBlue() + 255 * fraction));
+        HSLColor HSLcolor = new HSLColor(color);
+        return HSLcolor.adjustLuminance(luminance);
 
-        int alpha = color.getAlpha();
-
-        return new Color(red, green, blue, alpha);
     }
 
     private class MouseHandler extends MouseAdapter implements MouseMotionListener {
@@ -598,8 +588,7 @@ public class Painter extends JPanel {
                 Color color = JColorChooser.showDialog(Painter.this,
                         "Select Background Color", getBackground());
                 if (color != null) {
-                    backgroundColorBeforeStrengthChange = color;
-                    setAndBroadcastBackgroundColor(color);
+                    backgroundColorChange(color);
                 }
             }
         });
@@ -624,12 +613,19 @@ public class Painter extends JPanel {
         JMenuItem item = new JMenuItem(command);
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                backgroundColorBeforeStrengthChange = color;
-                Color newColor = brighten(backgroundColorBeforeStrengthChange, colorStrength);
-                setAndBroadcastBackgroundColor(newColor);
+                backgroundColorChange(color);
             }
         });
         return item;
+    }
+
+    private void backgroundColorChange(Color color) {
+
+        backgroundColorBeforeStrengthChange = color;
+        HSLColor HSLcolor = new HSLColor(backgroundColorBeforeStrengthChange);
+        double luminance = (double) HSLcolor.getLuminance();
+        spinnerBackgroundColorStrength.setValue(luminance);
+        setAndBroadcastBackgroundColor(backgroundColorBeforeStrengthChange);
     }
 
     /**
