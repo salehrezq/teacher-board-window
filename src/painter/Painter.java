@@ -159,7 +159,8 @@ public class Painter extends JPanel {
 
     private void setUpspinnerBackgroundColorStrength() {
 
-        SpinnerNumberModel model = new SpinnerNumberModel(50f, 0, 100, 1);
+        double backgroundColorLuminanceOnLaunch = getAndcastColorLuminanceToDouble(backgroundColorBeforeStrengthChange);
+        SpinnerNumberModel model = new SpinnerNumberModel(backgroundColorLuminanceOnLaunch, 0, 100, 1);
         spinnerBackgroundColorStrength = new JSpinner(model);
 
         //The following 4 lines is to enable invoking the changelisener at the same time of typing...
@@ -622,10 +623,15 @@ public class Painter extends JPanel {
     private void backgroundColorChange(Color color) {
 
         backgroundColorBeforeStrengthChange = color;
-        HSLColor HSLcolor = new HSLColor(backgroundColorBeforeStrengthChange);
-        double luminance = (double) HSLcolor.getLuminance();
+        double luminance = getAndcastColorLuminanceToDouble(color);
         spinnerBackgroundColorStrength.setValue(luminance);
-        setAndBroadcastBackgroundColor(backgroundColorBeforeStrengthChange);
+        setAndBroadcastBackgroundColor(color);
+    }
+
+    private double getAndcastColorLuminanceToDouble(Color color) {
+
+        HSLColor HSLcolor = new HSLColor(color);
+        return (double) HSLcolor.getLuminance();
     }
 
     /**
