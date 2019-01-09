@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.*;
+import java.util.List;
 import java.awt.event.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -543,14 +544,28 @@ public class Painter extends JPanel {
              * commands, it has no immediate effect on the drawing.  It justs sets
              * the color that will be used for future drawing.
          */
-        menuColor.add(makeColorMenuItem("Black", Color.BLACK));
-        menuColor.add(makeColorMenuItem("White", Color.WHITE));
-        menuColor.add(makeColorMenuItem("Red", Color.RED));
-        menuColor.add(makeColorMenuItem("Green", Color.GREEN));
-        menuColor.add(makeColorMenuItem("Blue", Color.BLUE));
-        menuColor.add(makeColorMenuItem("Cyan", Color.CYAN));
-        menuColor.add(makeColorMenuItem("Magenta", Color.MAGENTA));
-        menuColor.add(makeColorMenuItem("Yellow", Color.YELLOW));
+        List<ColorInfo> listPenColorInfo = new ArrayList<>();
+        listPenColorInfo.add(new ColorInfo("Black", Color.BLACK));
+        listPenColorInfo.add(new ColorInfo("White", Color.WHITE));
+        listPenColorInfo.add(new ColorInfo("Red", Color.RED));
+        listPenColorInfo.add(new ColorInfo("Green", Color.GREEN));
+        listPenColorInfo.add(new ColorInfo("Blue", Color.BLUE));
+        listPenColorInfo.add(new ColorInfo("Cyan", Color.CYAN));
+        listPenColorInfo.add(new ColorInfo("Magenta", Color.MAGENTA));
+        listPenColorInfo.add(new ColorInfo("Yellow", Color.YELLOW));
+
+        int listPenColorInfoSize = listPenColorInfo.size();
+        for (int i = 0; i < listPenColorInfoSize; i++) {
+
+            ColorInfo ci = listPenColorInfo.get(i);
+            menuColor.add(
+                    makeColorMenuItem(
+                            Utility.generateTitleWithSquarColor(
+                                    ci.getColorName(),
+                                    ci.getColor()),
+                            ci.getColor()));
+        }
+
         JMenuItem customColor = new JMenuItem("Custom...");
         menuColor.add(customColor);
         customColor.addActionListener(new ActionListener() {
@@ -572,15 +587,31 @@ public class Painter extends JPanel {
              * one of these commands, the panel is immediately redrawn with the new
              * background color.  Any curves that have been drawn are still there.
          */
-        menuBackgroundColor.add(makeBgColorMenuItem("Chalkboard", new Color(121, 183, 125)));
-        menuBackgroundColor.add(makeBgColorMenuItem("Black", Color.BLACK));
-        menuBackgroundColor.add(makeBgColorMenuItem("White", Color.WHITE));
-        menuBackgroundColor.add(makeBgColorMenuItem("Red", Color.RED));
-        menuBackgroundColor.add(makeBgColorMenuItem("Green", Color.GREEN));
-        menuBackgroundColor.add(makeBgColorMenuItem("Blue", Color.BLUE));
-        menuBackgroundColor.add(makeBgColorMenuItem("Cyan", Color.CYAN));
-        menuBackgroundColor.add(makeBgColorMenuItem("Magenta", Color.MAGENTA));
-        menuBackgroundColor.add(makeBgColorMenuItem("Yellow", Color.YELLOW));
+
+        List<ColorInfo> listBGColorInfo = new ArrayList<>();
+        listBGColorInfo.add(new ColorInfo("Chalkboard", new Color(89, 166, 94)));
+        listBGColorInfo.add(new ColorInfo("Black", Color.BLACK));
+        listBGColorInfo.add(new ColorInfo("White", Color.WHITE));
+        listBGColorInfo.add(new ColorInfo("Dark Slate Gray", new Color(47, 79, 79)));
+        listBGColorInfo.add(new ColorInfo("Light yellow", new Color(255, 255, 153)));
+        listBGColorInfo.add(new ColorInfo("Light blue", new Color(179, 179, 255)));
+        listBGColorInfo.add(new ColorInfo("Dark green", new Color(0, 128, 0)));
+        listBGColorInfo.add(new ColorInfo("Sky", new Color(135, 206, 235)));
+        listBGColorInfo.add(new ColorInfo("Cyan", Color.CYAN));
+        listBGColorInfo.add(new ColorInfo("Magenta", Color.MAGENTA));
+
+        int listBGColorInfoSize = listBGColorInfo.size();
+        for (int i = 0; i < listBGColorInfoSize; i++) {
+
+            ColorInfo ci = listBGColorInfo.get(i);
+            menuBackgroundColor.add(
+                    makeBgColorMenuItem(
+                            Utility.generateTitleWithSquarColor(
+                                    ci.getColorName(),
+                                    ci.getColor()),
+                            ci.getColor()));
+        }
+
         JMenuItem customBgColor = new JMenuItem("Custom...");
         menuBackgroundColor.add(customBgColor);
 
