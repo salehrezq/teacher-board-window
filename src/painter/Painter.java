@@ -342,7 +342,7 @@ public class Painter extends JPanel {
         if (drawObjects.size() > 0) {
             drawObjects_redo.add(drawObjects.remove(drawObjects.size() - 1));
             redoJMItem.setEnabled(true);
-            if (drawObjects.size() == 0) {
+            if (drawObjects.isEmpty()) {
                 undoJMItem.setEnabled(false);
             }
             serverBroadCast.broadcast_undo_command();
@@ -354,7 +354,7 @@ public class Painter extends JPanel {
         if (drawObjects_redo.size() > 0) {
             drawObjects.add(drawObjects_redo.remove(drawObjects_redo.size() - 1));
             undoJMItem.setEnabled(true);
-            if (drawObjects_redo.size() == 0) {
+            if (drawObjects_redo.isEmpty()) {
                 redoJMItem.setEnabled(false);
             }
             serverBroadCast.broadcast_redo_command();
