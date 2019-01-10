@@ -977,7 +977,8 @@ public class Painter extends JPanel {
         }
         try {
             String programName = (String) in.readObject();
-             float version = (float) in.readFloat();
+            float version = (float) in.readFloat();
+            newPage();
             Color newBackgroundColor = (Color) in.readObject();
             int drawObjectsCount = in.readInt();
             for (int i = 0; i < drawObjectsCount; i++) {
