@@ -486,7 +486,7 @@ public class Painter extends JPanel {
              * all the curves that have been drawn; and a "Use Symmetry"
              * checkbox that determines whether symmetry should be used.
          */
-        JMenuItem newVommand = new JMenuItem("New");
+        JMenuItem newVommand = new JMenuItem("New     Ctrl+N");
         fileMenue.add(newVommand);
         newVommand.addActionListener(new ActionListener() {
 
@@ -545,7 +545,7 @@ public class Painter extends JPanel {
             }
         });
 
-        undoJMItem = new JMenuItem("Undo");
+        undoJMItem = new JMenuItem("Undo     Ctrl+Z");
         undoJMItem.setEnabled(false);
 
         menuEdit.add(undoJMItem);
@@ -555,7 +555,7 @@ public class Painter extends JPanel {
             }
         });
 
-        redoJMItem = new JMenuItem("Redo");
+        redoJMItem = new JMenuItem("Redo     Ctrl+Y");
         redoJMItem.setEnabled(false);
 
         menuEdit.add(redoJMItem);
