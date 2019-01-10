@@ -980,6 +980,12 @@ public class Painter extends JPanel {
             float version = (float) in.readFloat();
             newPage();
             Color newBackgroundColor = (Color) in.readObject();
+
+            // Update the color selector colored box and the brightness setter
+            backgroundColorBeforeBrightnessChange = newBackgroundColor;
+            double colorBrightnessValue = getAndcastColorBrightnessToDouble(backgroundColorBeforeBrightnessChange);
+            spinnerBackgroundColorBrightness.setValue(colorBrightnessValue);
+
             int drawObjectsCount = in.readInt();
             for (int i = 0; i < drawObjectsCount; i++) {
                 Object drawObject = in.readObject();
