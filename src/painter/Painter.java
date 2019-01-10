@@ -59,6 +59,9 @@ public class Painter extends JPanel {
 
     DialogClientsControl dialog;
 
+    private JMenuItem undoJMItem;
+    private JMenuItem redoJMItem;
+
     double strokeSize;
     double eraserSize;
 
@@ -228,6 +231,8 @@ public class Painter extends JPanel {
 
             drawObjects.add(curveData);
 
+            undoJMItem.setEnabled(true);
+
             serverBroadCast.broadcast_mousePressed(curveData);
         }
 
@@ -336,6 +341,10 @@ public class Painter extends JPanel {
     private void undoPaint() {
         if (drawObjects.size() > 0) {
             drawObjects_redo.add(drawObjects.remove(drawObjects.size() - 1));
+            redoJMItem.setEnabled(true);
+            if (drawObjects.size() == 0) {
+                undoJMItem.setEnabled(false);
+            }
             serverBroadCast.broadcast_undo_command();
             repaint();  // Redraw without the curve that has been removed.
         }
@@ -344,6 +353,10 @@ public class Painter extends JPanel {
     private void redoPaint() {
         if (drawObjects_redo.size() > 0) {
             drawObjects.add(drawObjects_redo.remove(drawObjects_redo.size() - 1));
+            undoJMItem.setEnabled(true);
+            if (drawObjects_redo.size() == 0) {
+                redoJMItem.setEnabled(false);
+            }
             serverBroadCast.broadcast_redo_command();
             repaint();  // Redraw without the curve that has been removed.
         }
@@ -352,6 +365,8 @@ public class Painter extends JPanel {
     private void newPage() {
         drawObjects.clear();
         drawObjects_redo.clear();
+        undoJMItem.setEnabled(false);
+        redoJMItem.setEnabled(false);
         serverBroadCast.broadcast_newPage_command();
         repaint();
     }
@@ -441,13 +456,13 @@ public class Painter extends JPanel {
 
         /* Create the menus and add them to the menu bar. */
         JMenu fileMenue = new JMenu("File");
-        JMenu menuControl = new JMenu("Control");
+        JMenu menuEdit = new JMenu("Edit");
         menuColor = new JMenu(Utility.generateTitleWithSquarColor(penColorTitle, penColor));
         menuBackgroundColor = new JMenu(Utility.generateTitleWithSquarColor(backgroundColorTitle, backgroundColorBeforeStrengthChange));
 
         Color lbControlsColor = new Color(105, 105, 105);
         menuBar.add(fileMenue);
-        menuBar.add(menuControl);
+        menuBar.add(menuEdit);
         menuBar.add(menuColor);
         JLabel lbStrokeSize = new JLabel(" Stroke size: ");
         lbStrokeSize.setForeground(lbControlsColor);
@@ -465,7 +480,7 @@ public class Painter extends JPanel {
         menuBar.add(spinnerBackgroundColorStrength);;
         menuBar.add(btn_clients_control);
 
-        /* Add commands to the "Control" menu.  It contains an Undo
+        /* Add commands to the "Edit" menu.  It contains an Undo
              * command that will remove the most recently drawn curve
              * from the list of curves; a "Clear" command that removes
              * all the curves that have been drawn; and a "Use Symmetry"
@@ -530,12 +545,23 @@ public class Painter extends JPanel {
             }
         });
 
-        JMenuItem undo = new JMenuItem("Undo");
+        undoJMItem = new JMenuItem("Undo");
+        undoJMItem.setEnabled(false);
 
-        menuControl.add(undo);
-        undo.addActionListener(new ActionListener() {
+        menuEdit.add(undoJMItem);
+        undoJMItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 undoPaint();
+            }
+        });
+
+        redoJMItem = new JMenuItem("Redo");
+        redoJMItem.setEnabled(false);
+
+        menuEdit.add(redoJMItem);
+        redoJMItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                redoPaint();
             }
         });
 
