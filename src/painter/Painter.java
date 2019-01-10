@@ -67,7 +67,7 @@ public class Painter extends JPanel {
 
     JSpinner spinnerStrokeSize;
     JSpinner spinnerEraserSize;
-    JSpinner spinnerBackgroundColorStrength;
+    JSpinner spinnerBackgroundColorBrightness;
     JButton btnDrawTool; // to toggle between the pen and the eraser.
     JButton btn_clients_control;
     private boolean eraserTool;
@@ -80,7 +80,7 @@ public class Painter extends JPanel {
     private final String penColorTitle = "Pen color";
     private Color penColor;
     private Color currentColor;
-    private Color backgroundColorBeforeStrengthChange;
+    private Color backgroundColorBeforeBrightnessChange;
 
     JMenu menuBackgroundColor;
     private final String backgroundColorTitle = "Background color";
@@ -101,10 +101,10 @@ public class Painter extends JPanel {
         penColor = Color.BLACK;
         currentColor = penColor;
 
-        backgroundColorBeforeStrengthChange = Color.white;
-        setBackground(backgroundColorBeforeStrengthChange);
+        backgroundColorBeforeBrightnessChange = Color.white;
+        setBackground(backgroundColorBeforeBrightnessChange);
 
-        setUpspinnerBackgroundColorStrength();
+        setUpspinnerBackgroundColorBrightness();
         setUpspinnerStrokeSize();
         setUpspinnerEraserSize();
 
@@ -161,37 +161,37 @@ public class Painter extends JPanel {
         });
     }
 
-    private void setUpspinnerBackgroundColorStrength() {
+    private void setUpspinnerBackgroundColorBrightness() {
 
-        double backgroundColorLuminanceOnLaunch = getAndcastColorLuminanceToDouble(backgroundColorBeforeStrengthChange);
-        SpinnerNumberModel model = new SpinnerNumberModel(backgroundColorLuminanceOnLaunch, 0, 100, 1);
-        spinnerBackgroundColorStrength = new JSpinner(model);
+        double backgroundColorBrightnessOnLaunch = getAndcastColorBrightnessToDouble(backgroundColorBeforeBrightnessChange);
+        SpinnerNumberModel model = new SpinnerNumberModel(backgroundColorBrightnessOnLaunch, 0, 100, 1);
+        spinnerBackgroundColorBrightness = new JSpinner(model);
 
         //The following 4 lines is to enable invoking the changelisener at the same time of typing...
-        JComponent comp = spinnerBackgroundColorStrength.getEditor();
+        JComponent comp = spinnerBackgroundColorBrightness.getEditor();
         JFormattedTextField field = (JFormattedTextField) comp.getComponent(0);
         DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
         formatter.setCommitsOnValidEdit(true);
         //
-        spinnerBackgroundColorStrength.setMaximumSize(new Dimension(70, spinnerBackgroundColorStrength.getPreferredSize().height));
-        spinnerBackgroundColorStrength.addChangeListener(new ChangeListener() {
+        spinnerBackgroundColorBrightness.setMaximumSize(new Dimension(70, spinnerBackgroundColorBrightness.getPreferredSize().height));
+        spinnerBackgroundColorBrightness.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 try {
                     Thread.sleep(50);
-                    float luminance = ((Double) spinnerBackgroundColorStrength.getValue()).floatValue();
-                    setAndBroadcastBackgroundColor(brighten(backgroundColorBeforeStrengthChange, luminance));
+                    float colorBrightnessValue = ((Double) spinnerBackgroundColorBrightness.getValue()).floatValue();
+                    setAndBroadcastBackgroundColor(setBrightnessAndGetRGBColor(backgroundColorBeforeBrightnessChange, colorBrightnessValue));
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Painter.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
     }
-    public Color brighten(Color color, float luminance) {
+    public Color setBrightnessAndGetRGBColor(Color color, float brightness) {
 
         HSLColor HSLcolor = new HSLColor(color);
-        return HSLcolor.adjustLuminance(luminance);
-
+        // Luminance is also Brightness
+        return HSLcolor.adjustLuminance(brightness);
     }
 
     private class MouseHandler extends MouseAdapter implements MouseMotionListener {
@@ -458,7 +458,7 @@ public class Painter extends JPanel {
         JMenu fileMenue = new JMenu("File");
         JMenu menuEdit = new JMenu("Edit");
         menuColor = new JMenu(Utility.generateTitleWithSquarColor(penColorTitle, penColor));
-        menuBackgroundColor = new JMenu(Utility.generateTitleWithSquarColor(backgroundColorTitle, backgroundColorBeforeStrengthChange));
+        menuBackgroundColor = new JMenu(Utility.generateTitleWithSquarColor(backgroundColorTitle, backgroundColorBeforeBrightnessChange));
 
         Color lbControlsColor = new Color(105, 105, 105);
         menuBar.add(fileMenue);
@@ -474,10 +474,10 @@ public class Painter extends JPanel {
         menuBar.add(lbEraserSize);
         menuBar.add(spinnerEraserSize);
         menuBar.add(menuBackgroundColor);
-        JLabel lbBackgroundColorStrength = new JLabel(" Background color strength: ");
-        lbBackgroundColorStrength.setForeground(lbControlsColor);
-        menuBar.add(lbBackgroundColorStrength);
-        menuBar.add(spinnerBackgroundColorStrength);;
+        JLabel lbBackgroundColorBrightness = new JLabel(" Background brightness: ");
+        lbBackgroundColorBrightness.setForeground(lbControlsColor);
+        menuBar.add(lbBackgroundColorBrightness);
+        menuBar.add(spinnerBackgroundColorBrightness);;
         menuBar.add(btn_clients_control);
 
         /* Add commands to the "Edit" menu.  It contains an Undo
@@ -679,15 +679,16 @@ public class Painter extends JPanel {
 
     private void backgroundColorChange(Color color) {
 
-        backgroundColorBeforeStrengthChange = color;
-        double luminance = getAndcastColorLuminanceToDouble(color);
-        spinnerBackgroundColorStrength.setValue(luminance);
+        backgroundColorBeforeBrightnessChange = color;
+        double colorBrightnessValue = getAndcastColorBrightnessToDouble(color);
+        spinnerBackgroundColorBrightness.setValue(colorBrightnessValue);
         setAndBroadcastBackgroundColor(color);
     }
 
-    private double getAndcastColorLuminanceToDouble(Color color) {
+    private double getAndcastColorBrightnessToDouble(Color color) {
 
         HSLColor HSLcolor = new HSLColor(color);
+        // Luminance is also Brightness
         return (double) HSLcolor.getLuminance();
     }
 
