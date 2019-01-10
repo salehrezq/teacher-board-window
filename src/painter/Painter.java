@@ -27,6 +27,8 @@ import java.io.FileWriter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -1045,18 +1047,37 @@ public class Painter extends JPanel {
         }
     }
 
+    private String getMachineAddress() {
+
+        InetAddress ip;
+        String hostname = "";
+
+        try {
+            ip = InetAddress.getLocalHost();
+            hostname = ip.getHostAddress();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(Painter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return hostname;
+    }
+
     public void seFrametTitle(int clients) {
-        String title = "Teacher board";
+
+        String bar = " | ";
+        String titleOtherPart = "";
         if (clients > 0) {
             if (clients == 1) {
-                title = "Teacher board -  " + clients + " student connected";
+                titleOtherPart = clients + " student connected";
             } else {
-                title = "Teacher board -  " + clients + " students connected";
+                titleOtherPart = clients + " students connected";
             }
         } else {
-            title = "Teacher board - No students connected";
+            titleOtherPart = "No students connected";
         }
-        this.frame.setTitle(title);
+
+        String compiledTitle = "Teacher board | " + getMachineAddress() + bar + titleOtherPart;
+        this.frame.setTitle(compiledTitle);
     }
 
     public void createPainterGUI(Painter painter) {
