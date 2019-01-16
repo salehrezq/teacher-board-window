@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,6 +73,7 @@ public class Painter extends JPanel {
     JSpinner spinnerBackgroundColorBrightness;
     JButton btnDrawTool; // to toggle between the pen and the eraser.
     JButton btn_clients_control;
+    Color colorClientsWarnning;
     private boolean eraserTool;
 
     private JFileChooser filechooser;
@@ -115,6 +117,8 @@ public class Painter extends JPanel {
         btnDrawTool.addActionListener(actionBtnDrawTool);
         btn_clients_control = new JButton("Monitor");
         btn_clients_control.addActionListener(action_btn_clients_control);
+
+        colorClientsWarnning = new Color(255, 153, 51);
 
         // setResizable(false);
         MouseHandler listener = new MouseHandler();
@@ -885,6 +889,29 @@ public class Painter extends JPanel {
             return;
         }
 
+    }
+
+    public void IndicateWhetherStudentsWindowsAreNotOK() {
+
+        LinkedHashSet<ServerManager> connectedClients = serverBroadCast.getConnectedClients();
+
+        boolean windowStateIsOk = true;
+
+        for (ServerManager connectedClient : connectedClients) {
+            windowStateIsOk = connectedClient.isClinetIsActive()
+                    && connectedClient.isClinetIsUpFront()
+                    && connectedClient.isClinetIsFullScreen();
+
+            if (!windowStateIsOk) {
+                break;
+            }
+        }
+
+        if (windowStateIsOk) {
+            btn_clients_control.setBackground(null);
+        } else {
+            btn_clients_control.setBackground(colorClientsWarnning);
+        }
     }
 
     /**

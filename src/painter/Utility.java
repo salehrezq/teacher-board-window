@@ -28,4 +28,25 @@ public class Utility {
         return result;
     }
 
+    public static String[] extractClientAddressSegments(String fullAddress) {
+
+        String[] address_segments = new String[2];
+        int i;
+        String str = fullAddress;
+        int strLength = str.length();
+        for (i = 0; i < strLength; i++) {
+            if (str.charAt(i) == '/') {
+                break;
+            }
+        }
+
+        String name = str.substring(0, i);
+        String IP = str.substring(i + 1);
+
+        address_segments[0] = name;
+        address_segments[1] = IP;
+
+        return address_segments;
+    }
+
 }

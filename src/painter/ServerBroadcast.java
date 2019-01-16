@@ -167,6 +167,10 @@ public class ServerBroadcast {
         serverManager = null;
     }
 
+    public LinkedHashSet<ServerManager> getConnectedClients() {
+        return this.connectedClients;
+    }
+
     public static void main(String[] args) {
         ServerBroadcast serverBroadcast = new ServerBroadcast();
     }

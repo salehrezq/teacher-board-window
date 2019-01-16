@@ -26,6 +26,9 @@ public class ServerManager implements Runnable {
     private int clientRow;
     private Thread thread;
     private Painter paint;
+    private boolean clinetIsActive;
+    private boolean clinetIsUpFront;
+    private boolean clinetIsFullScreen;
 
     ServerBroadcast serverBroadCase;
     private volatile boolean threadRunning = true;
@@ -62,16 +65,42 @@ public class ServerManager implements Runnable {
         if (socket != null && ois != null) {
             try {
                 Object obj = ois.readObject();
-                if (obj instanceof String) {
-                    String msgFromClinet = (String) obj;
 
-                    if (msgFromClinet.startsWith("isActive")) {
-                        serverBroadCase.updateCell(extractBoolean(msgFromClinet, "isActive"), clientRow, 2);
-                    } else if (msgFromClinet.startsWith("isUpFront")) {
-                        serverBroadCase.updateCell(extractBoolean(msgFromClinet, "isUpFront"), clientRow, 3);
-                    } else if (msgFromClinet.startsWith("isFullscreen")) {
-                        serverBroadCase.updateCell(extractBoolean(msgFromClinet, "isFullscreen"), clientRow, 4);
-                    } else if (msgFromClinet.startsWith("address")) {
+                if (obj instanceof StateInfo) {
+
+                    StateInfo stateInfo = (StateInfo) obj;
+                    String stateTyp = stateInfo.getType();
+                    boolean state = stateInfo.getState();
+                    String studentDeviceName = Utility.extractClientAddressSegments(stateInfo.getInfo())[0];
+
+                    switch (stateTyp) {
+                        case "isUpFront": {
+                            clinetIsUpFront = state;
+                            serverBroadCase.updateCell(state, clientRow, 3);
+                            paint.IndicateWhetherStudentsWindowsAreNotOK();
+                            break;
+                        }
+                        case "isActive": {
+                            clinetIsActive = state;
+                            serverBroadCase.updateCell(state, clientRow, 2);
+                            paint.IndicateWhetherStudentsWindowsAreNotOK();
+                            break;
+                        }
+                        case "isFullScreen": {
+                            clinetIsFullScreen = state;
+                            serverBroadCase.updateCell(state, clientRow, 4);
+                            paint.IndicateWhetherStudentsWindowsAreNotOK();
+                            break;
+                        }
+                        case "ClientClose": {
+                            clientExited();
+                            paint.IndicateWhetherStudentsWindowsAreNotOK();
+                            break;
+                        }
+                    }
+                } else if (obj instanceof String) {
+                    String msgFromClinet = (String) obj;
+                    if (msgFromClinet.startsWith("address")) {
 
                         String fullClientAddress = msgFromClinet.replaceFirst("address", "");
                         int row = serverBroadCase.addClientAddress(fullClientAddress);
@@ -84,8 +113,6 @@ public class ServerManager implements Runnable {
                             //If not added due to duplicate client instance
                             clientDuplicate();
                         }
-                    } else if (msgFromClinet.equals("ClientClose")) {
-                        clientExited();
                     }
                 }
             } catch (IOException | ClassNotFoundException ex) {
@@ -94,8 +121,16 @@ public class ServerManager implements Runnable {
         }
     }
 
-    private boolean extractBoolean(String msg, String key) {
-        return Boolean.parseBoolean(msg.replaceAll(key, ""));
+    public boolean isClinetIsActive() {
+        return clinetIsActive;
+    }
+
+    public boolean isClinetIsUpFront() {
+        return clinetIsUpFront;
+    }
+
+    public boolean isClinetIsFullScreen() {
+        return clinetIsFullScreen;
     }
 
     public void clientExited() {
@@ -126,6 +161,7 @@ public class ServerManager implements Runnable {
                 send_newPage_command("newRedoList");
             }
             //
+            paint.IndicateWhetherStudentsWindowsAreNotOK();
             thread = new Thread(receiveFromClient);
             thread.start();
         }
@@ -220,4 +256,5 @@ public class ServerManager implements Runnable {
             Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
 }
